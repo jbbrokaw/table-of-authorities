@@ -8,6 +8,20 @@ ABBREVIATIONS = {'Co.',
                  'Corp.',
                  'Inc.',
                  'Dist.'}
+LOWERCASE_WORDS = {'the', 'a', 'an', 'and', 'of'}
+CLAUSE_ENDERS = {'.', ';'}
+
+
+def title_word(word):
+    if word[0].isupper() and (word[-1] not in CLAUSE_ENDERS):
+        return True
+    if word in ALLOWED_SYMBOLS:
+        return True
+    if word in LOWERCASE_WORDS:
+        return True
+    if word in ABBREVIATIONS:
+        return True
+    return False
 
 
 def find_full_cites(doc):
@@ -35,19 +49,18 @@ def find_full_cites(doc):
 def find_cites_by_word(text):
     words = text.split()
     date_re = re.compile('\d{4}\)')
-    if 'v.' not in words:
-        return
 
-    v_index = words.index('v.')
-    begin_index = v_index - 1
-    while (words[begin_index][-1] != '.') or \
-            (words[begin_index] in ABBREVIATIONS):
-        begin_index += 1
-    begin_index = min(v_index - 1, begin_index + 1)
-    end_index = v_index + 1
-    while (end_index < len(words)) and \
-            (date_re.search(words[end_index]) is None):
-        end_index += 1
-    cite_string = " ".join(words[begin_index:end_index + 1])
-    if date_re.search(cite_string):
-        print cite_string
+    while 'v.' in words:
+        v_index = words.index('v.')
+        begin_index = v_index - 1
+        while (begin_index >= 0) and title_word(words[begin_index]):
+            begin_index -= 1
+        begin_index = min(v_index - 1, begin_index + 1)
+        end_index = v_index + 1
+        while (end_index < len(words)) and \
+                (date_re.search(words[end_index]) is None):
+            end_index += 1
+        cite_string = " ".join(words[begin_index:end_index + 1])
+        if date_re.search(cite_string):
+            print cite_string
+        words = words[v_index + 1:]
