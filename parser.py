@@ -64,3 +64,21 @@ def find_cites_by_word(text):
         if date_re.search(cite_string):
             print cite_string
         words = words[v_index + 1:]
+
+
+def find_in_re_cites(text):
+    words = text.split()
+    date_re = re.compile('\d{4}\)')
+    while 're' in words:
+        re_index = words.index('re')
+        if (re_index < 1) or (words[re_index - 1] != 'In'):
+            words = words[re_index + 1:]
+            continue
+        end_index = re_index + 1
+        while (end_index < len(words)) and \
+                (date_re.search(words[end_index]) is None):
+            end_index += 1
+        cite_string = " ".join(words[re_index - 1:end_index + 1])
+        if date_re.search(cite_string):
+            print cite_string
+        words = words[re_index + 1:]
