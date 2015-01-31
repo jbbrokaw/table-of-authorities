@@ -24,29 +24,7 @@ def title_word(word):
     return False
 
 
-def find_full_cites(doc):
-    date_re = re.compile('\d{4}\)')
-    for (pnum, paragraph) in enumerate(doc.paragraphs):
-        for (rnum, run) in enumerate(paragraph.runs):
-            if ('v.' in run.text):
-                run_start = rnum
-                while (run_start >= 0) and \
-                        (paragraph.runs[run_start].italic or
-                            paragraph.runs[run_start].style == "Emphasis"):
-                    run_start -= 1
-                run_start = min(rnum, run_start + 1)
-                run_end = rnum
-                while (run_end < len(paragraph.runs)) and \
-                        (date_re.search(paragraph.runs[run_end].text) is None):
-                    run_end += 1
-                cite_string = "".join(
-                    [run.text for run in paragraph.runs[run_start:run_end + 1]]
-                )
-                if date_re.search(cite_string):
-                    print cite_string
-
-
-def find_cites_by_word(text):
+def find_v_cites(text):
     words = text.split()
     date_re = re.compile('\d{4}\)')
 
@@ -82,3 +60,18 @@ def find_in_re_cites(text):
         if date_re.search(cite_string):
             print cite_string
         words = words[re_index + 1:]
+
+if __name__ == '__main__':
+    from sys import argv
+    from docx import Document
+    if len(argv) < 2:
+        print "Usage: python parse.py [file.docx]"
+    filename = argv[1]
+    file_name_parts = filename.split('.')
+    if (len(file_name_parts) < 2) or (file_name_parts[1] != 'docx'):
+        print "Only .docx files supported currently"
+
+    doc = Document(filename)
+    for paragraph in doc.paragraphs:
+        find_v_cites(paragraph.text)
+        find_in_re_cites(paragraph.text)
