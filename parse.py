@@ -24,6 +24,19 @@ def title_word(word):
     return False
 
 
+def split_v_cite(v_cite_text):
+    """Return an array of the cite elements according to the pattern:
+    P1 v. P2, (volume reporter[, page,])+
+    ([court] year)"""
+    pattern_string = '(?P<plaintiff>[A-Z].*) v. (?P<defendant>[A-Z].*), ' + \
+        '(?P<volume>\\d+) (?P<reporter>.*) (?P<page>\\d+) ' + \
+        '\\((?P<year>\\d{4})\\)'
+    match = re.match(pattern_string, v_cite_text)
+    if match is None:
+        return
+    return match.groups()
+
+
 def find_v_cites(text):
     words = text.split()
     date_re = re.compile('\d{4}\)')
