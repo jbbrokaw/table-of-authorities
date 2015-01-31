@@ -61,11 +61,15 @@ def find_in_re_cites(text):
             print cite_string
         words = words[re_index + 1:]
 
-if __name__ == '__main__':
+
+def main():
     from sys import argv
     from docx import Document
+
     if len(argv) < 2:
         print "Usage: python parse.py [file.docx]"
+        return
+
     filename = argv[1]
     file_name_parts = filename.split('.')
     if (len(file_name_parts) < 2) or (file_name_parts[1] != 'docx'):
@@ -75,3 +79,7 @@ if __name__ == '__main__':
     for paragraph in doc.paragraphs:
         find_v_cites(paragraph.text)
         find_in_re_cites(paragraph.text)
+
+
+if __name__ == '__main__':
+    main()
